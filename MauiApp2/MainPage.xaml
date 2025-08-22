@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:MauiApp2"
              x:Class="MauiApp2.MainPage"
-             x:DataType="local:ViewModels.MainMV"
+             x:DataType="local:ViewModels.Mainviewmodel"
              Title="Simulateur d'Impôt"
              BackgroundColor="{AppThemeBinding Light=#F7F7F7, Dark=#121212}">
 
@@ -29,7 +29,7 @@
                 <Setter Property="StrokeShape" Value="RoundRectangle 12" />
                 <Setter Property="BackgroundColor" Value="{AppThemeBinding Light={StaticResource CardBackgroundColorLight}, Dark={StaticResource CardBackgroundColorDark}}" />
                 <Setter Property="Shadow">
-                    <Shadow Brush="#000000" Offset="4,4" Radius="15" Opacity="0.05"/>
+                    <Shadow Brush="#000000" Offset="4,4" Radius="15" Opacity="0.05" />
                 </Setter>
             </Style>
             <Style x:Key="SectionTitleStyle" TargetType="Label">
@@ -38,15 +38,15 @@
                 <Setter Property="TextColor" Value="{StaticResource PrimaryColor}" />
             </Style>
             <Style x:Key="ResultLabelStyle" TargetType="Label">
-                <Setter Property="VerticalOptions" Value="Center"/>
-                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}"/>
+                <Setter Property="VerticalOptions" Value="Center" />
+                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}" />
             </Style>
             <Style x:Key="ResultValueStyle" TargetType="Label">
-                <Setter Property="VerticalOptions" Value="Center"/>
-                <Setter Property="HorizontalOptions" Value="End"/>
-                <Setter Property="FontAttributes" Value="Bold"/>
-                <Setter Property="FontSize" Value="16"/>
-                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}"/>
+                <Setter Property="VerticalOptions" Value="Center" />
+                <Setter Property="HorizontalOptions" Value="End" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
             </Style>
         </ResourceDictionary>
     </ContentPage.Resources>
@@ -59,17 +59,17 @@
                 <VerticalStackLayout Spacing="10">
                     <Label Text="Vos informations" Style="{StaticResource SectionTitleStyle}" />
 
-                    <Label Text="Salaire net fiscal annuel" Margin="0,15,0,0" TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}"/>
-                    <Label Text="(Montant avant abattement, présent sur votre fiche de paie)" FontSize="Micro" TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}"/>
+                    <Label Text="Salaire net fiscal annuel" Margin="0,15,0,0" TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}" />
+                    <Label Text="(Montant avant abattement, présent sur votre fiche de paie)" FontSize="Micro" TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}" />
 
                     <Entry Text="{Binding SalaireNetInput, Mode=TwoWay}"
                            Keyboard="Numeric"
                            Placeholder="Ex: 30000"
                            FontSize="18"
                            BackgroundColor="{AppThemeBinding Light={StaticResource EntryBackgroundColorLight}, Dark={StaticResource EntryBackgroundColorDark}}"
-                           TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}"/>
+                           TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
 
-                    <Label Text="Situation familiale" Margin="0,15,0,5" TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}"/>
+                    <Label Text="Situation familiale" Margin="0,15,0,5" TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}" />
                     <Picker ItemsSource="{Binding PartOptions}"
                             SelectedItem="{Binding SelectedPartOption}"
                             ItemDisplayBinding="{Binding Description}" />
@@ -82,42 +82,40 @@
                     <Label Text="Détail du calcul" Style="{StaticResource SectionTitleStyle}" />
 
                     <Grid ColumnDefinitions="*, Auto" Margin="0,10,0,0">
-                        <Label Grid.Column="0" Text="Base de calcul (après abattement)" Style="{StaticResource ResultLabelStyle}"/>
-                        <Label Grid.Column="1" Text="{Binding SalaireNetApresAbattement, StringFormat='{0:C}'}" Style="{StaticResource ResultValueStyle}"/>
+                        <Label Grid.Column="0" Text="Base de calcul (après abattement)" Style="{StaticResource ResultLabelStyle}" />
+                        <Label Grid.Column="1" Text="{Binding SalaireNetApresAbattement, StringFormat='{0:C}'}" Style="{StaticResource ResultValueStyle}" />
                     </Grid>
 
                     <Grid ColumnDefinitions="*, Auto">
-                        <Label Grid.Column="0" Text="Impôt théorique (selon parts)" Style="{StaticResource ResultLabelStyle}"/>
-                        <Label Grid.Column="1" Text="{Binding ImpotTheorique, StringFormat='{0:C}'}" Style="{StaticResource ResultValueStyle}"/>
+                        <Label Grid.Column="0" Text="Impôt théorique (selon parts)" Style="{StaticResource ResultLabelStyle}" />
+                        <Label Grid.Column="1" Text="{Binding ImpotTheorique, StringFormat='{0:C}'}" Style="{StaticResource ResultValueStyle}" />
                     </Grid>
 
                     <Grid ColumnDefinitions="*, Auto" IsVisible="{Binding IsPlafonne}">
-                        <Label Grid.Column="0" Text="Correction (plafonnement QF)" Style="{StaticResource ResultLabelStyle}" TextColor="OrangeRed"/>
-                        <Label Grid.Column="1" Text="{Binding CoutPlafonnement, StringFormat='+ {0:C}'}" Style="{StaticResource ResultValueStyle}" TextColor="OrangeRed"/>
+                        <Label Grid.Column="0" Text="Correction (plafonnement QF)" Style="{StaticResource ResultLabelStyle}" TextColor="OrangeRed" />
+                        <Label Grid.Column="1" Text="{Binding CoutPlafonnement, StringFormat='+ {0:C}'}" Style="{StaticResource ResultValueStyle}" TextColor="OrangeRed" />
                     </Grid>
 
                     <Grid ColumnDefinitions="*, Auto">
-                        <Label Grid.Column="0" Text="Décote (si applicable)" Style="{StaticResource ResultLabelStyle}"/>
-                        <Label Grid.Column="1" Text="{Binding Decote, StringFormat='- {0:C}'}" Style="{StaticResource ResultValueStyle}" TextColor="ForestGreen"/>
+                        <Label Grid.Column="0" Text="Décote (si applicable)" Style="{StaticResource ResultLabelStyle}" />
+                        <Label Grid.Column="1" Text="{Binding Decote, StringFormat='- {0:C}'}" Style="{StaticResource ResultValueStyle}" TextColor="ForestGreen" />
                     </Grid>
 
-                    <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource BorderColorLight}, Dark={StaticResource BorderColorDark}}" Margin="0,10"/>
+                    <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource BorderColorLight}, Dark={StaticResource BorderColorDark}}" Margin="0,10" />
                     <Grid ColumnDefinitions="*, Auto">
-                        <Label Grid.Column="0" Text="Impôt net à payer" FontSize="18" FontAttributes="Bold" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}"/>
-                        <Label Grid.Column="1" Text="{Binding ImpotAPayer, StringFormat='{0:C}'}" FontSize="20" FontAttributes="Bold" VerticalOptions="Center" TextColor="{StaticResource PrimaryColor}"/>
+                        <Label Grid.Column="0" Text="Impôt net à payer" FontSize="18" FontAttributes="Bold" VerticalOptions="Center" TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                        <Label Grid.Column="1" Text="{Binding ImpotAPayer, StringFormat='{0:C}'}" FontSize="20" FontAttributes="Bold" VerticalOptions="Center" TextColor="{StaticResource PrimaryColor}" />
                     </Grid>
                     <Grid ColumnDefinitions="*, Auto" Margin="0,10,0,0">
-                        <Label Grid.Column="0" Text="Taux d'imposition effectif" Style="{StaticResource ResultLabelStyle}"/>
-                        <Label Grid.Column="1" Text="{Binding PourcentageImpot, StringFormat='{0:P2}'}" Style="{StaticResource ResultValueStyle}"/>
+                        <Label Grid.Column="0" Text="Taux d'imposition effectif" Style="{StaticResource ResultLabelStyle}" />
+                        <Label Grid.Column="1" Text="{Binding PourcentageImpot, StringFormat='{0:P2}'}" Style="{StaticResource ResultValueStyle}" />
                     </Grid>
                     <Grid ColumnDefinitions="*, Auto">
-                        <Label Grid.Column="0" Text="Taux marginal (TMI)" Style="{StaticResource ResultLabelStyle}"/>
-                        <Label Grid.Column="1" Text="{Binding TauxMarginal, StringFormat='{0:P0}'}" Style="{StaticResource ResultValueStyle}"/>
+                        <Label Grid.Column="0" Text="Taux marginal (TMI)" Style="{StaticResource ResultLabelStyle}" />
+                        <Label Grid.Column="1" Text="{Binding TauxMarginal, StringFormat='{0:P0}'}" Style="{StaticResource ResultValueStyle}" />
                     </Grid>
                 </VerticalStackLayout>
             </Border>
-
         </VerticalStackLayout>
     </ScrollView>
-
 </ContentPage>

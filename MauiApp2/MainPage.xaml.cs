@@ -4,7 +4,7 @@ namespace MauiApp2
 {
     public partial class MainPage : ContentPage
     {
-        public MainPage(MainMV mainViewModel)
+        public MainPage(Mainviewmodel mainViewModel)
         {
             InitializeComponent();
 

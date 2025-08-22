@@ -19,11 +19,12 @@ namespace MauiApp2
                 });
 
 #if DEBUG
-    		builder.Logging.AddDebug();
-            builder.Services.AddSingleton<IImpotCalculator, ImpotCalculator>();
-            builder.Services.AddSingleton<MainMV>();
-            builder.Services.AddSingleton<MainPage>();
+            builder.Logging.AddDebug();
 #endif
+            builder.Services.AddSingleton<IImpotCalculator, ImpotCalculator>();
+            builder.Services.AddSingleton<Mainviewmodel>();
+            builder.Services.AddSingleton<MainPage>();
+
 
             return builder.Build();
         }
