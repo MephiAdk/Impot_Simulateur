@@ -259,21 +259,6 @@ L'application a été testée avec différents scénarios :
 - ✅ Revenus très élevés (TMI 45%)
 
 
-## 📚 Ressources
-
-### Références officielles
-
-- [Barème de l'impôt sur le revenu 2024](https://www.impots.gouv.fr/particulier/bareme-de-limpot-sur-le-revenu)
-- [Quotient familial](https://www.service-public.fr/particuliers/vosdroits/F2705)
-- [Décote](https://www.service-public.fr/particuliers/vosdroits/F2329)
-- [Documentation .NET MAUI](https://learn.microsoft.com/dotnet/maui/)
-
-### Outils utiles
-
-- [Simulateur officiel des impôts](https://www.impots.gouv.fr/simulateurs)
-- [JSON Validator](https://jsonlint.com/) - Pour vérifier votre barème fiscal
-
-
 <div align="center">
 
 **⭐ Si ce projet vous est utile, n'hésitez pas à lui donner une étoile ! ⭐**
