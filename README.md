@@ -203,8 +203,6 @@ Le fichier `MauiApp2/Resources/Raw/bareme_fiscal.json` contient **toutes les val
 3. Changez `"annee": 2025`
 4. Sauvegardez et redéployez
 
-🔗 [Documentation complète du barème](MauiApp2/Resources/Raw/README_BAREME.md)
-
 ---
 
 ## 🏗️ Architecture
@@ -243,20 +241,6 @@ Fournit les explications contextuelles pour chaque terme fiscal.
 - ✅ **Compiled Bindings** : Performance optimisée
 
 ---
-
-## 🧪 Tests
-
-### Cas de test principaux
-
-L'application a été testée avec différents scénarios :
-
-- ✅ Célibataire sans enfant
-- ✅ Couple sans enfant
-- ✅ Famille avec 1, 2, 3+ enfants
-- ✅ Parent isolé avec enfants
-- ✅ Revenus faibles (avec décote)
-- ✅ Revenus élevés (avec plafonnement QF)
-- ✅ Revenus très élevés (TMI 45%)
 
 
 <div align="center">
