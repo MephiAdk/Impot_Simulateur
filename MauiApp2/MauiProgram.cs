@@ -1,5 +1,6 @@
 ﻿using MauiApp2.Contract;
 using MauiApp2.Service;
+using MauiApp2.Services;
 using MauiApp2.ViewModels;
 using Microsoft.Extensions.Logging;
 
@@ -21,10 +22,13 @@ namespace MauiApp2
 #if DEBUG
             builder.Logging.AddDebug();
 #endif
+            // Services
+            builder.Services.AddSingleton<BaremeFiscalService>();
             builder.Services.AddSingleton<IImpotCalculator, ImpotCalculator>();
+            
+            // ViewModels et Pages
             builder.Services.AddSingleton<Mainviewmodel>();
             builder.Services.AddSingleton<MainPage>();
-
 
             return builder.Build();
         }

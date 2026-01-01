@@ -1,0 +1,37 @@
+{
+  "_comment": "FICHIER TEMPLATE - Ne pas modifier ce fichier directement",
+  "_comment2": "Pour mettre à jour le barème, modifiez le fichier 'bareme_fiscal.json'",
+  "_comment3": "Ce fichier sert de référence pour connaître la structure",
+  
+  "annee": 9999,
+  
+  "tranches": {
+    "seuil1": 0,
+    "seuil2": 0,
+    "seuil3": 0,
+    "seuil4": 0,
+    "taux0": 0.00,
+    "taux1": 0.00,
+    "taux2": 0.00,
+    "taux3": 0.00,
+    "taux4": 0.00
+  },
+  
+  "decote": {
+    "plafondCelibataire": 0,
+    "plafondCouple": 0,
+    "montantBaseCelibataire": 0,
+    "montantBaseCouple": 0,
+    "coefficient": 0.0000
+  },
+  
+  "abattement": {
+    "tauxAbattement": 0.00,
+    "plafondAbattement": 0
+  },
+  
+  "plafonnement": {
+    "plafondAvantageDemiPart": 0
+  }
+}
+

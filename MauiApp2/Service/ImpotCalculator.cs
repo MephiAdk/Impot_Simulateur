@@ -1,24 +1,23 @@
 ﻿using MauiApp2.Contract;
+using MauiApp2.Models;
+using MauiApp2.Services;
 
 namespace MauiApp2.Service
 {
     public class ImpotCalculator : IImpotCalculator
     {
-        private const decimal COEFF_DECOTE                    = 0.4525m;
-        private const decimal MONTANT_BASE_DECOTE_CELIBATAIRE = 889m;
-        private const decimal MONTANT_BASE_DECOTE_COUPLE      = 1470m;
-        private const decimal PLAFOND_AVANTAGE_DEMI_PART      = 1791m;
-        private const decimal PLAFOND_DECOTE_CELIBATAIRE      = 1964m;
-        private const decimal PLAFOND_DECOTE_COUPLE           = 3248m;
-        private const decimal SEUIL_TRANCHE_1                 = 11497m;
-        private const decimal SEUIL_TRANCHE_2                 = 29315m;
-        private const decimal SEUIL_TRANCHE_3                 = 83823m;
-        private const decimal SEUIL_TRANCHE_4                 = 180294m;
-        private const decimal TAUX_TRANCHE_0                  = 0m;
-        private const decimal TAUX_TRANCHE_1                  = 0.11m;
-        private const decimal TAUX_TRANCHE_2                  = 0.30m;
-        private const decimal TAUX_TRANCHE_3                  = 0.41m;
-        private const decimal TAUX_TRANCHE_4                  = 0.45m;
+        public readonly BaremeFiscalService _baremeFiscalService;
+        private BaremeFiscal? _bareme;
+
+        public ImpotCalculator(BaremeFiscalService baremeFiscalService)
+        {
+            _baremeFiscalService = baremeFiscalService;
+        }
+
+        public async Task InitialiserAsync()
+        {
+            _bareme = await _baremeFiscalService.ChargerBaremeAsync();
+        }
 
         // Le surcoût dû au plafonnement.
         public decimal CoutPlafonnement => Math.Max(0, ImpotBrut - ImpotTheorique);
@@ -27,13 +26,15 @@ namespace MauiApp2.Service
         {
             get
             {
+                if (_bareme?.Decote == null) return 0;
+
                 decimal impotAvantDecote = ImpotBrut;
-                decimal plafondImpot     = IsCouple ? PLAFOND_DECOTE_COUPLE : PLAFOND_DECOTE_CELIBATAIRE;
-                decimal montantBase      = IsCouple ? MONTANT_BASE_DECOTE_COUPLE : MONTANT_BASE_DECOTE_CELIBATAIRE;
+                decimal plafondImpot = IsCouple ? _bareme.Decote.PlafondCouple : _bareme.Decote.PlafondCelibataire;
+                decimal montantBase = IsCouple ? _bareme.Decote.MontantBaseCouple : _bareme.Decote.MontantBaseCelibataire;
 
                 if (impotAvantDecote < plafondImpot)
                 {
-                    decimal decoteCalculee = montantBase - (COEFF_DECOTE * impotAvantDecote);
+                    decimal decoteCalculee = montantBase - (_bareme.Decote.Coefficient * impotAvantDecote);
                     return Math.Max(0, Math.Round(decoteCalculee, 2));
                 }
                 return 0;
@@ -47,20 +48,22 @@ namespace MauiApp2.Service
         {
             get
             {
+                if (_bareme?.Plafonnement == null) return ImpotTheorique;
+
                 decimal partsDeBase = IsCouple ? 2m : 1m;
                 if (NombreDeParts > partsDeBase)
                 {
-                    decimal impotSansAvantage        = CalculerImpotDeBasePourParts(partsDeBase);
-                    decimal avantageReel             = impotSansAvantage - ImpotTheorique;
+                    decimal impotSansAvantage = CalculerImpotDeBasePourParts(partsDeBase);
+                    decimal avantageReel = impotSansAvantage - ImpotTheorique;
                     decimal demiPartsSupplementaires = (NombreDeParts - partsDeBase) * 2;
-                    decimal avantageMaxAutorise      = demiPartsSupplementaires * PLAFOND_AVANTAGE_DEMI_PART;
+                    decimal avantageMaxAutorise = demiPartsSupplementaires * _bareme.Plafonnement.PlafondAvantageDemiPart;
 
                     if (avantageReel > avantageMaxAutorise)
                     {
                         return Math.Max(0, impotSansAvantage - avantageMaxAutorise);
                     }
                 }
-                return ImpotTheorique; // Si pas de plafonnement, le brut = le théorique
+                return ImpotTheorique;
             }
         }
 
@@ -75,24 +78,38 @@ namespace MauiApp2.Service
         public decimal NombreDeParts { get; private set; }
         public decimal PourcentageImpot => (SalaireNet > 0) ? ImpotAPayer / SalaireNet : 0;
         public decimal SalaireNet { get; private set; }
-        public decimal SalaireNetApresAbattement => SalaireNet * 0.90m;
+        
+        public decimal SalaireNetApresAbattement
+        {
+            get
+            {
+                if (_bareme?.Abattement == null) return SalaireNet * 0.90m;
+
+                decimal abattement = SalaireNet * _bareme.Abattement.TauxAbattement;
+                abattement = Math.Min(abattement, _bareme.Abattement.PlafondAbattement);
+                return SalaireNet - abattement;
+            }
+        }
 
         public decimal TauxMarginal
         {
             get
             {
-                decimal revenuImposable = SalaireNetApresAbattement;
-                if (revenuImposable > SEUIL_TRANCHE_4) return TAUX_TRANCHE_4;
-                if (revenuImposable > SEUIL_TRANCHE_3) return TAUX_TRANCHE_3;
-                if (revenuImposable > SEUIL_TRANCHE_2) return TAUX_TRANCHE_2;
-                if (revenuImposable > SEUIL_TRANCHE_1) return TAUX_TRANCHE_1;
-                return TAUX_TRANCHE_0;
+                if (_bareme?.Tranches == null || NombreDeParts == 0) return 0;
+
+                // Le TMI se calcule sur le QUOTIENT FAMILIAL, pas sur le revenu total
+                decimal quotientFamilial = SalaireNetApresAbattement / NombreDeParts;
+                
+                if (quotientFamilial > _bareme.Tranches.Seuil4) return _bareme.Tranches.Taux4;
+                if (quotientFamilial > _bareme.Tranches.Seuil3) return _bareme.Tranches.Taux3;
+                if (quotientFamilial > _bareme.Tranches.Seuil2) return _bareme.Tranches.Taux2;
+                if (quotientFamilial > _bareme.Tranches.Seuil1) return _bareme.Tranches.Taux1;
+                return _bareme.Tranches.Taux0;
             }
         }
 
         public void CalculImpot(decimal salaireNet, decimal nombreDeParts, bool isCouple)
         {
-            // Cette méthode ne fait que stocker les nouvelles données.
             SalaireNet = salaireNet;
             NombreDeParts = nombreDeParts;
             IsCouple = isCouple;
@@ -100,14 +117,22 @@ namespace MauiApp2.Service
 
         private decimal CalculerImpotDeBasePourParts(decimal parts)
         {
-            if (parts <= 0) return 0;
+            if (_bareme?.Tranches == null || parts <= 0) return 0;
+
             decimal quotientFamilial = SalaireNetApresAbattement / parts;
             decimal impotPourUnePart = 0;
 
-            if (quotientFamilial > SEUIL_TRANCHE_1) impotPourUnePart += (Math.Min(quotientFamilial, SEUIL_TRANCHE_2) - SEUIL_TRANCHE_1) * TAUX_TRANCHE_1;
-            if (quotientFamilial > SEUIL_TRANCHE_2) impotPourUnePart += (Math.Min(quotientFamilial, SEUIL_TRANCHE_3) - SEUIL_TRANCHE_2) * TAUX_TRANCHE_2;
-            if (quotientFamilial > SEUIL_TRANCHE_3) impotPourUnePart += (Math.Min(quotientFamilial, SEUIL_TRANCHE_4) - SEUIL_TRANCHE_3) * TAUX_TRANCHE_3;
-            if (quotientFamilial > SEUIL_TRANCHE_4) impotPourUnePart += (quotientFamilial - SEUIL_TRANCHE_4) * TAUX_TRANCHE_4;
+            if (quotientFamilial > _bareme.Tranches.Seuil1)
+                impotPourUnePart += (Math.Min(quotientFamilial, _bareme.Tranches.Seuil2) - _bareme.Tranches.Seuil1) * _bareme.Tranches.Taux1;
+
+            if (quotientFamilial > _bareme.Tranches.Seuil2)
+                impotPourUnePart += (Math.Min(quotientFamilial, _bareme.Tranches.Seuil3) - _bareme.Tranches.Seuil2) * _bareme.Tranches.Taux2;
+
+            if (quotientFamilial > _bareme.Tranches.Seuil3)
+                impotPourUnePart += (Math.Min(quotientFamilial, _bareme.Tranches.Seuil4) - _bareme.Tranches.Seuil3) * _bareme.Tranches.Taux3;
+
+            if (quotientFamilial > _bareme.Tranches.Seuil4)
+                impotPourUnePart += (quotientFamilial - _bareme.Tranches.Seuil4) * _bareme.Tranches.Taux4;
 
             return Math.Round(impotPourUnePart * parts, 2);
         }

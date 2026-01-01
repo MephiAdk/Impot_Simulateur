@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiApp2.Pages.GlossairePage"
+             Title="Lexique fiscal"
+             BackgroundColor="{AppThemeBinding Light=#F7F7F7, Dark=#121212}">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Color x:Key="CardBackgroundColorLight">#FFFFFF</Color>
+            <Color x:Key="CardBackgroundColorDark">#1E1E1E</Color>
+            <Color x:Key="BorderColorLight">#E1E1E1</Color>
+            <Color x:Key="BorderColorDark">#404040</Color>
+            <Color x:Key="PrimaryColor">#6200EE</Color>
+            <Color x:Key="TextColorLight">#424242</Color>
+            <Color x:Key="TextColorDark">#E0E0E0</Color>
+            <Color x:Key="MutedTextColorLight">#757575</Color>
+            <Color x:Key="MutedTextColorDark">#9E9E9E</Color>
+            <Color x:Key="ExempleBackgroundLight">#F7F7F7</Color>
+            <Color x:Key="ExempleBackgroundDark">#1E1E1E</Color>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="15" Padding="20">
+            
+            <Label Text="📚 Lexique des termes fiscaux"
+                   FontSize="22"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource PrimaryColor}"
+                   Margin="0,0,0,10" />
+
+            <Label Text="Découvrez tous les termes utilisés dans le simulateur d'impôts français."
+                   FontSize="14"
+                   TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}"
+                   Margin="0,0,0,10" />
+
+            <!-- Abattement forfaitaire -->
+            <Border BackgroundColor="{AppThemeBinding Light={StaticResource CardBackgroundColorLight}, Dark={StaticResource CardBackgroundColorDark}}"
+                    Stroke="{AppThemeBinding Light={StaticResource BorderColorLight}, Dark={StaticResource BorderColorDark}}"
+                    StrokeThickness="1"
+                    Padding="15"
+                    StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Abattement forfaitaire de 10%" 
+                           FontSize="16" 
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                    <Label Text="L'administration fiscale applique automatiquement un abattement de 10% sur vos revenus salariaux pour tenir compte de vos frais professionnels (déplacements, repas, etc.). Cet abattement est plafonné à 13 522 € pour 2024."
+                           FontSize="13"
+                           LineBreakMode="WordWrap"
+                           TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                    <Border BackgroundColor="{AppThemeBinding Light={StaticResource ExempleBackgroundLight}, Dark={StaticResource ExempleBackgroundDark}}"
+                            Padding="10"
+                            StrokeShape="RoundRectangle 6"
+                            Stroke="Transparent">
+                        <Label Text="💡 Exemple : Pour un salaire de 30 000 €, l'abattement est de 3 000 €, ce qui donne une base imposable de 27 000 €."
+                               FontSize="12"
+                               LineBreakMode="WordWrap"
+                               TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}" />
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Décote -->
+            <Border BackgroundColor="{AppThemeBinding Light={StaticResource CardBackgroundColorLight}, Dark={StaticResource CardBackgroundColorDark}}"
+                    Stroke="{AppThemeBinding Light={StaticResource BorderColorLight}, Dark={StaticResource BorderColorDark}}"
+                    StrokeThickness="1"
+                    Padding="15"
+                    StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Décote" 
+                           FontSize="16" 
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                    <Label Text="La décote est un mécanisme qui réduit l'impôt des foyers modestes. Elle s'applique si l'impôt brut est inférieur à 1 964 € (célibataire) ou 3 248 € (couple). La formule est : décote = 889 € - (impôt × 45,25%) pour un célibataire."
+                           FontSize="13"
+                           LineBreakMode="WordWrap"
+                           TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                    <Border BackgroundColor="{AppThemeBinding Light={StaticResource ExempleBackgroundLight}, Dark={StaticResource ExempleBackgroundDark}}"
+                            Padding="10"
+                            StrokeShape="RoundRectangle 6"
+                            Stroke="Transparent">
+                        <Label Text="💡 Exemple : Avec un impôt brut de 1 500 €, la décote est de 889 € - (1 500 × 45,25%) = 210 €. L'impôt final sera donc de 1 290 €."
+                               FontSize="12"
+                               LineBreakMode="WordWrap"
+                               TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}" />
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Part fiscale -->
+            <Border BackgroundColor="{AppThemeBinding Light={StaticResource CardBackgroundColorLight}, Dark={StaticResource CardBackgroundColorDark}}"
+                    Stroke="{AppThemeBinding Light={StaticResource BorderColorLight}, Dark={StaticResource BorderColorDark}}"
+                    StrokeThickness="1"
+                    Padding="15"
+                    StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Part fiscale" 
+                           FontSize="16" 
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                    <Label Text="Le nombre de parts fiscales dépend de votre situation familiale. Une personne seule = 1 part, un couple = 2 parts. Chaque demi-part supplémentaire (enfants) divise davantage le revenu imposable, réduisant ainsi l'impôt."
+                           FontSize="13"
+                           LineBreakMode="WordWrap"
+                           TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                    <Border BackgroundColor="{AppThemeBinding Light={StaticResource ExempleBackgroundLight}, Dark={StaticResource ExempleBackgroundDark}}"
+                            Padding="10"
+                            StrokeShape="RoundRectangle 6"
+                            Stroke="Transparent">
+                        <Label Text="💡 Exemple : Célibataire = 1 part • Couple = 2 parts • Couple + 1 enfant = 2,5 parts • Couple + 2 enfants = 3 parts"
+                               FontSize="12"
+                               LineBreakMode="WordWrap"
+                               TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}" />
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Plafonnement du quotient familial -->
+            <Border BackgroundColor="{AppThemeBinding Light={StaticResource CardBackgroundColorLight}, Dark={StaticResource CardBackgroundColorDark}}"
+                    Stroke="{AppThemeBinding Light={StaticResource BorderColorLight}, Dark={StaticResource BorderColorDark}}"
+                    StrokeThickness="1"
+                    Padding="15"
+                    StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Plafonnement du quotient familial" 
+                           FontSize="16" 
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                    <Label Text="Pour limiter l'avantage fiscal lié aux demi-parts supplémentaires (enfants, etc.), chaque demi-part ne peut réduire l'impôt de plus de 1 791 € (2024). Si l'avantage dépasse ce plafond, l'excédent est réintégré dans l'impôt dû."
+                           FontSize="13"
+                           LineBreakMode="WordWrap"
+                           TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                    <Border BackgroundColor="{AppThemeBinding Light={StaticResource ExempleBackgroundLight}, Dark={StaticResource ExempleBackgroundDark}}"
+                            Padding="10"
+                            StrokeShape="RoundRectangle 6"
+                            Stroke="Transparent">
+                        <Label Text="💡 Exemple : Avec 2.5 parts, la demi-part supplémentaire peut réduire l'impôt de 1 791 € maximum, même si le calcul brut donnerait une réduction plus importante."
+                               FontSize="12"
+                               LineBreakMode="WordWrap"
+                               TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}" />
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Prélèvement à la source -->
+            <Border BackgroundColor="{AppThemeBinding Light={StaticResource CardBackgroundColorLight}, Dark={StaticResource CardBackgroundColorDark}}"
+                    Stroke="{AppThemeBinding Light={StaticResource BorderColorLight}, Dark={StaticResource BorderColorDark}}"
+                    StrokeThickness="1"
+                    Padding="15"
+                    StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Prélèvement à la source" 
+                           FontSize="16" 
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                    <Label Text="Depuis 2019, l'impôt sur le revenu est prélevé mensuellement directement sur votre salaire. Le montant indiqué dans le simulateur est une estimation du prélèvement mensuel moyen que vous subiriez avec cette situation fiscale."
+                           FontSize="13"
+                           LineBreakMode="WordWrap"
+                           TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                    <Border BackgroundColor="{AppThemeBinding Light={StaticResource ExempleBackgroundLight}, Dark={StaticResource ExempleBackgroundDark}}"
+                            Padding="10"
+                            StrokeShape="RoundRectangle 6"
+                            Stroke="Transparent">
+                        <Label Text="💡 Exemple : Pour un impôt annuel de 3 600 €, le prélèvement mensuel sera d'environ 300 €."
+                               FontSize="12"
+                               LineBreakMode="WordWrap"
+                               TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}" />
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Quotient familial -->
+            <Border BackgroundColor="{AppThemeBinding Light={StaticResource CardBackgroundColorLight}, Dark={StaticResource CardBackgroundColorDark}}"
+                    Stroke="{AppThemeBinding Light={StaticResource BorderColorLight}, Dark={StaticResource BorderColorDark}}"
+                    StrokeThickness="1"
+                    Padding="15"
+                    StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Quotient familial" 
+                           FontSize="16" 
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                    <Label Text="Le quotient familial est le résultat de la division de votre revenu imposable par le nombre de parts fiscales. C'est sur cette base que s'appliquent les tranches d'imposition. Plus vous avez de parts, plus ce quotient diminue, réduisant ainsi votre impôt."
+                           FontSize="13"
+                           LineBreakMode="WordWrap"
+                           TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                    <Border BackgroundColor="{AppThemeBinding Light={StaticResource ExempleBackgroundLight}, Dark={StaticResource ExempleBackgroundDark}}"
+                            Padding="10"
+                            StrokeShape="RoundRectangle 6"
+                            Stroke="Transparent">
+                        <Label Text="💡 Exemple : Revenu de 40 000 € ÷ 2 parts = 20 000 € de quotient familial. Les tranches s'appliquent sur ces 20 000 €, puis l'impôt est multiplié par 2."
+                               FontSize="12"
+                               LineBreakMode="WordWrap"
+                               TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}" />
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Taux d'imposition effectif -->
+            <Border BackgroundColor="{AppThemeBinding Light={StaticResource CardBackgroundColorLight}, Dark={StaticResource CardBackgroundColorDark}}"
+                    Stroke="{AppThemeBinding Light={StaticResource BorderColorLight}, Dark={StaticResource BorderColorDark}}"
+                    StrokeThickness="1"
+                    Padding="15"
+                    StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Taux d'imposition effectif" 
+                           FontSize="16" 
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                    <Label Text="C'est le pourcentage réel d'impôt que vous payez par rapport à votre revenu total. Il est toujours inférieur au taux marginal car l'impôt est progressif. C'est le vrai indicateur de votre charge fiscale."
+                           FontSize="13"
+                           LineBreakMode="WordWrap"
+                           TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                    <Border BackgroundColor="{AppThemeBinding Light={StaticResource ExempleBackgroundLight}, Dark={StaticResource ExempleBackgroundDark}}"
+                            Padding="10"
+                            StrokeShape="RoundRectangle 6"
+                            Stroke="Transparent">
+                        <Label Text="💡 Exemple : Si vous payez 4 500 € d'impôt pour 30 000 € de revenu, votre taux effectif est de 15%."
+                               FontSize="12"
+                               LineBreakMode="WordWrap"
+                               TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}" />
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Taux Marginal d'Imposition (TMI) -->
+            <Border BackgroundColor="{AppThemeBinding Light={StaticResource CardBackgroundColorLight}, Dark={StaticResource CardBackgroundColorDark}}"
+                    Stroke="{AppThemeBinding Light={StaticResource BorderColorLight}, Dark={StaticResource BorderColorDark}}"
+                    StrokeThickness="1"
+                    Padding="15"
+                    StrokeShape="RoundRectangle 10">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Taux Marginal d'Imposition (TMI)" 
+                           FontSize="16" 
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                    <Label Text="C'est le taux d'imposition de la tranche la plus haute dans laquelle se situe votre quotient familial. Attention : seule la partie du revenu dans cette tranche est imposée à ce taux, pas la totalité !"
+                           FontSize="13"
+                           LineBreakMode="WordWrap"
+                           TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                    <Border BackgroundColor="{AppThemeBinding Light={StaticResource ExempleBackgroundLight}, Dark={StaticResource ExempleBackgroundDark}}"
+                            Padding="10"
+                            StrokeShape="RoundRectangle 6"
+                            Stroke="Transparent">
+                        <Label Text="💡 Exemple : Si votre quotient familial est de 35 000 €, votre TMI est de 30%, mais seule la partie au-dessus de 29 315 € est imposée à 30%."
+                               FontSize="12"
+                               LineBreakMode="WordWrap"
+                               TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}" />
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Tranches d'imposition -->
+            <Border BackgroundColor="{AppThemeBinding Light={StaticResource CardBackgroundColorLight}, Dark={StaticResource CardBackgroundColorDark}}"
+                    Stroke="{AppThemeBinding Light={StaticResource BorderColorLight}, Dark={StaticResource BorderColorDark}}"
+                    StrokeThickness="1"
+                    Padding="15"
+                    StrokeShape="RoundRectangle 10"
+                    Margin="0,0,0,20">
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Tranches d'imposition 2024" 
+                           FontSize="16" 
+                           FontAttributes="Bold"
+                           TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                    <Label Text="L'impôt français est progressif par tranches. Chaque tranche de revenu est imposée à un taux différent. Seule la partie du revenu dans chaque tranche est imposée au taux correspondant."
+                           FontSize="13"
+                           LineBreakMode="WordWrap"
+                           TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                    <Border BackgroundColor="{AppThemeBinding Light={StaticResource ExempleBackgroundLight}, Dark={StaticResource ExempleBackgroundDark}}"
+                            Padding="10"
+                            StrokeShape="RoundRectangle 6"
+                            Stroke="Transparent">
+                        <Label FontSize="12" LineBreakMode="WordWrap" TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="💡 Barème 2024 (par part) :&#x0a;" />
+                                    <Span Text="• 0 à 11 497 € → 0%&#x0a;" />
+                                    <Span Text="• 11 497 à 29 315 € → 11%&#x0a;" />
+                                    <Span Text="• 29 315 à 83 823 € → 30%&#x0a;" />
+                                    <Span Text="• 83 823 à 180 294 € → 41%&#x0a;" />
+                                    <Span Text="• Au-delà de 180 294 € → 45%" />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                    </Border>
+                </VerticalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
+

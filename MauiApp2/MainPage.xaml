@@ -2,13 +2,29 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:MauiApp2"
+             xmlns:converters="clr-namespace:MauiApp2.Converters"
+             xmlns:controls="clr-namespace:MauiApp2.Controls"
              x:Class="MauiApp2.MainPage"
              x:DataType="local:ViewModels.Mainviewmodel"
              Title="Simulateur d'Impôt"
              BackgroundColor="{AppThemeBinding Light=#F7F7F7, Dark=#121212}">
 
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="📚 Lexique"
+                     Order="Secondary"
+                     Priority="0"
+                     Clicked="OnGlossaireClicked" />
+    </ContentPage.ToolbarItems>
+
     <ContentPage.Resources>
         <ResourceDictionary>
+            <converters:BoolToExpandIconConverter x:Key="BoolToExpandIconConverter" />
+            <converters:GreaterThanZeroBoldConverter x:Key="GreaterThanZeroBoldConverter" />
+            <converters:GreaterThanZeroConverter x:Key="GreaterThanZeroConverter" />
+            <converters:PlafonnementToEtapeConverter x:Key="PlafonnementToEtapeConverter" />
+            <converters:PercentageToStarConverter x:Key="PercentageToStarConverter" />
+            <converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+            
             <Color x:Key="PageBackgroundColorLight">#F7F7F7</Color>
             <Color x:Key="PageBackgroundColorDark">#121212</Color>
             <Color x:Key="CardBackgroundColorLight">#FFFFFF</Color>
@@ -59,7 +75,12 @@
                 <VerticalStackLayout Spacing="10">
                     <Label Text="Vos informations" Style="{StaticResource SectionTitleStyle}" />
 
-                    <Label Text="Salaire net fiscal annuel" Margin="0,15,0,0" TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}" />
+                    <HorizontalStackLayout Spacing="5" Margin="0,15,0,0">
+                        <Label Text="Salaire net fiscal annuel" 
+                               VerticalOptions="Center"
+                               TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}" />
+                        <controls:InfoIcon TooltipKey="SalaireNetFiscal" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
                     <Label Text="(Montant avant abattement, présent sur votre fiche de paie)" FontSize="Micro" TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}" />
 
                     <Entry Text="{Binding SalaireNetInput, Mode=TwoWay}"
@@ -69,10 +90,57 @@
                            BackgroundColor="{AppThemeBinding Light={StaticResource EntryBackgroundColorLight}, Dark={StaticResource EntryBackgroundColorDark}}"
                            TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
 
-                    <Label Text="Situation familiale" Margin="0,15,0,5" TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}" />
-                    <Picker ItemsSource="{Binding PartOptions}"
-                            SelectedItem="{Binding SelectedPartOption}"
-                            ItemDisplayBinding="{Binding Description}" />
+                    <HorizontalStackLayout Spacing="5" Margin="0,15,0,5">
+                        <Label Text="Situation familiale" 
+                               VerticalOptions="Center"
+                               TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}" />
+                        <controls:InfoIcon TooltipKey="PartFiscale" VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+                    
+                    <!-- Sélecteur Célibataire/Couple -->
+                    <HorizontalStackLayout Spacing="15" Margin="0,5,0,0">
+                        <RadioButton Content="Célibataire"
+                                     IsChecked="{Binding EstEnCouple, Converter={StaticResource InverseBoolConverter}}"
+                                     GroupName="Situation" />
+                        <RadioButton Content="Couple (marié/pacsé)"
+                                     IsChecked="{Binding EstEnCouple}"
+                                     GroupName="Situation" />
+                    </HorizontalStackLayout>
+                    
+                    <!-- Nombre d'enfants -->
+                    <HorizontalStackLayout Spacing="10" Margin="0,10,0,0">
+                        <Label Text="Nombre d'enfants à charge :" 
+                               VerticalOptions="Center"
+                               TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}" />
+                        <Stepper Value="{Binding NombreEnfants}"
+                                 Minimum="0"
+                                 Maximum="15"
+                                 Increment="1"
+                                 VerticalOptions="Center" />
+                        <Label Text="{Binding NombreEnfants}"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               VerticalOptions="Center"
+                               TextColor="{StaticResource PrimaryColor}" />
+                    </HorizontalStackLayout>
+                    
+                    <!-- Affichage du nombre de parts calculé -->
+                    <Border BackgroundColor="{AppThemeBinding Light=#E3F2FD, Dark=#0D47A1}"
+                            Padding="10"
+                            StrokeShape="RoundRectangle 8"
+                            Stroke="Transparent"
+                            Margin="0,10,0,0">
+                        <HorizontalStackLayout Spacing="10">
+                            <Label Text="📊"
+                                   FontSize="18"
+                                   VerticalOptions="Center" />
+                            <Label Text="{Binding DescriptionParts}"
+                                   FontSize="14"
+                                   FontAttributes="Bold"
+                                   VerticalOptions="Center"
+                                   TextColor="{AppThemeBinding Light=#1565C0, Dark=#90CAF9}}" />
+                        </HorizontalStackLayout>
+                    </Border>
                 </VerticalStackLayout>
             </Border>
 
@@ -82,22 +150,34 @@
                     <Label Text="Détail du calcul" Style="{StaticResource SectionTitleStyle}" />
 
                     <Grid ColumnDefinitions="*, Auto" Margin="0,10,0,0">
-                        <Label Grid.Column="0" Text="Base de calcul (après abattement)" Style="{StaticResource ResultLabelStyle}" />
+                        <HorizontalStackLayout Grid.Column="0" Spacing="3">
+                            <Label Text="Base de calcul (après abattement)" Style="{StaticResource ResultLabelStyle}" />
+                            <controls:InfoIcon TooltipKey="AbattementForfaitaire" VerticalOptions="Center" />
+                        </HorizontalStackLayout>
                         <Label Grid.Column="1" Text="{Binding SalaireNetApresAbattement, StringFormat='{0:C}'}" Style="{StaticResource ResultValueStyle}" />
                     </Grid>
 
                     <Grid ColumnDefinitions="*, Auto">
-                        <Label Grid.Column="0" Text="Impôt théorique (selon parts)" Style="{StaticResource ResultLabelStyle}" />
+                        <HorizontalStackLayout Grid.Column="0" Spacing="3">
+                            <Label Text="Impôt théorique (selon parts)" Style="{StaticResource ResultLabelStyle}" />
+                            <controls:InfoIcon TooltipKey="QuotientFamilial" VerticalOptions="Center" />
+                        </HorizontalStackLayout>
                         <Label Grid.Column="1" Text="{Binding ImpotTheorique, StringFormat='{0:C}'}" Style="{StaticResource ResultValueStyle}" />
                     </Grid>
 
                     <Grid ColumnDefinitions="*, Auto" IsVisible="{Binding IsPlafonne}">
-                        <Label Grid.Column="0" Text="Correction (plafonnement QF)" Style="{StaticResource ResultLabelStyle}" TextColor="OrangeRed" />
+                        <HorizontalStackLayout Grid.Column="0" Spacing="3">
+                            <Label Text="Correction (plafonnement QF)" Style="{StaticResource ResultLabelStyle}" TextColor="OrangeRed" />
+                            <controls:InfoIcon TooltipKey="Plafonnement" VerticalOptions="Center" />
+                        </HorizontalStackLayout>
                         <Label Grid.Column="1" Text="{Binding CoutPlafonnement, StringFormat='+ {0:C}'}" Style="{StaticResource ResultValueStyle}" TextColor="OrangeRed" />
                     </Grid>
 
                     <Grid ColumnDefinitions="*, Auto">
-                        <Label Grid.Column="0" Text="Décote (si applicable)" Style="{StaticResource ResultLabelStyle}" />
+                        <HorizontalStackLayout Grid.Column="0" Spacing="3">
+                            <Label Text="Décote (si applicable)" Style="{StaticResource ResultLabelStyle}" />
+                            <controls:InfoIcon TooltipKey="Decote" VerticalOptions="Center" />
+                        </HorizontalStackLayout>
                         <Label Grid.Column="1" Text="{Binding Decote, StringFormat='- {0:C}'}" Style="{StaticResource ResultValueStyle}" TextColor="ForestGreen" />
                     </Grid>
 
@@ -107,13 +187,437 @@
                         <Label Grid.Column="1" Text="{Binding ImpotAPayer, StringFormat='{0:C}'}" FontSize="20" FontAttributes="Bold" VerticalOptions="Center" TextColor="{StaticResource PrimaryColor}" />
                     </Grid>
                     <Grid ColumnDefinitions="*, Auto" Margin="0,10,0,0">
-                        <Label Grid.Column="0" Text="Taux d'imposition effectif" Style="{StaticResource ResultLabelStyle}" />
+                        <HorizontalStackLayout Grid.Column="0" Spacing="3">
+                            <Label Text="Taux d'imposition effectif" Style="{StaticResource ResultLabelStyle}" />
+                            <controls:InfoIcon TooltipKey="TauxEffectif" VerticalOptions="Center" />
+                        </HorizontalStackLayout>
                         <Label Grid.Column="1" Text="{Binding PourcentageImpot, StringFormat='{0:P2}'}" Style="{StaticResource ResultValueStyle}" />
                     </Grid>
                     <Grid ColumnDefinitions="*, Auto">
-                        <Label Grid.Column="0" Text="Taux marginal (TMI)" Style="{StaticResource ResultLabelStyle}" />
+                        <HorizontalStackLayout Grid.Column="0" Spacing="3">
+                            <Label Text="Taux marginal (TMI)" Style="{StaticResource ResultLabelStyle}" />
+                            <controls:InfoIcon TooltipKey="TauxMarginal" VerticalOptions="Center" />
+                        </HorizontalStackLayout>
                         <Label Grid.Column="1" Text="{Binding TauxMarginal, StringFormat='{0:P0}'}" Style="{StaticResource ResultValueStyle}" />
                     </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- ======================= SECTION PRÉLÈVEMENT MENSUEL ======================= -->
+            <Border BackgroundColor="{StaticResource PrimaryColor}"
+                    Padding="20"
+                    StrokeThickness="0"
+                    StrokeShape="RoundRectangle 12">
+                <Border.Shadow>
+                    <Shadow Brush="#000000" Offset="4,4" Radius="15" Opacity="0.1" />
+                </Border.Shadow>
+                
+                <VerticalStackLayout Spacing="8">
+                    <HorizontalStackLayout Spacing="5" HorizontalOptions="Center">
+                        <Label Text="💰 Prélèvement mensuel estimé" 
+                               FontSize="16"
+                               FontAttributes="Bold"
+                               TextColor="White"
+                               VerticalOptions="Center" />
+                        <Border BackgroundColor="Transparent" Padding="3">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnPrelevementInfoTapped" />
+                            </Border.GestureRecognizers>
+                            <Label Text="ⓘ"
+                                   FontSize="16"
+                                   TextColor="White"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"
+                                   Opacity="0.9" />
+                        </Border>
+                    </HorizontalStackLayout>
+                    
+                    <Label Text="{Binding PrelevementMensuel, StringFormat='{0:N0} € / mois'}"
+                           FontSize="32"
+                           FontAttributes="Bold"
+                           TextColor="White"
+                           HorizontalTextAlignment="Center" />
+                    
+                    <Label FontSize="14" 
+                           TextColor="White" 
+                           Opacity="0.9"
+                           HorizontalTextAlignment="Center">
+                        <Label.FormattedText>
+                            <FormattedString>
+                                <Span Text="Soit " />
+                                <Span Text="{Binding PourcentageImpot, StringFormat='{0:P1}'}" FontAttributes="Bold" />
+                                <Span Text=" de votre revenu mensuel" />
+                            </FormattedString>
+                        </Label.FormattedText>
+                    </Label>
+
+                    <BoxView HeightRequest="1" Color="White" Opacity="0.3" Margin="0,10" />
+
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="15">
+                        <VerticalStackLayout Grid.Column="0" Spacing="3">
+                            <Label Text="Revenu mensuel net" 
+                                   FontSize="12" 
+                                   TextColor="White" 
+                                   Opacity="0.8"
+                                   HorizontalTextAlignment="Center" />
+                            <Label Text="{Binding SalaireMensuelNet, StringFormat='{0:N0} €'}"
+                                   FontSize="16" 
+                                   FontAttributes="Bold" 
+                                   TextColor="White"
+                                   HorizontalTextAlignment="Center" />
+                        </VerticalStackLayout>
+
+                        <VerticalStackLayout Grid.Column="1" Spacing="3">
+                            <Label Text="Reste après impôt" 
+                                   FontSize="12" 
+                                   TextColor="White" 
+                                   Opacity="0.8"
+                                   HorizontalTextAlignment="Center" />
+                            <Label Text="{Binding SalaireMensuelApresImpot, StringFormat='{0:N0} €'}"
+                                   FontSize="16" 
+                                   FontAttributes="Bold" 
+                                   TextColor="White"
+                                   HorizontalTextAlignment="Center" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- ======================= VISUALISATION GRAPHIQUE ======================= -->
+            <Border Style="{StaticResource CardBorderStyle}">
+                <VerticalStackLayout Spacing="15">
+                    <Label Text="Répartition de votre revenu" 
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="{StaticResource PrimaryColor}" />
+
+                    <!-- Barre de progression -->
+                    <Grid RowDefinitions="Auto, Auto, Auto" RowSpacing="10">
+                        <!-- Barre visuelle -->
+                        <Grid Grid.Row="0" HeightRequest="60" ColumnSpacing="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="{Binding PourcentageResteApresImpot, Converter={StaticResource PercentageToStarConverter}}" />
+                                <ColumnDefinition Width="{Binding PourcentageImpot, Converter={StaticResource PercentageToStarConverter}}" />
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Partie revenu net -->
+                            <Border Grid.Column="0" 
+                                    BackgroundColor="ForestGreen"
+                                    StrokeThickness="0"
+                                    Margin="0,0,2,0">
+                                <Label Text="{Binding PourcentageResteApresImpot, StringFormat='{0:P1}'}"
+                                       TextColor="White"
+                                       FontSize="16"
+                                       FontAttributes="Bold"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center" />
+                            </Border>
+
+                            <!-- Partie impôt -->
+                            <Border Grid.Column="1" 
+                                    BackgroundColor="OrangeRed"
+                                    StrokeThickness="0"
+                                    Margin="2,0,0,0">
+                                <Label Text="{Binding PourcentageImpot, StringFormat='{0:P1}'}"
+                                       TextColor="White"
+                                       FontSize="16"
+                                       FontAttributes="Bold"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center" />
+                            </Border>
+                        </Grid>
+
+                        <!-- Légendes -->
+                        <Grid Grid.Row="1" ColumnDefinitions="*, *" ColumnSpacing="10">
+                            <HorizontalStackLayout Grid.Column="0" Spacing="8" HorizontalOptions="Start">
+                                <BoxView WidthRequest="20" HeightRequest="20" Color="ForestGreen" />
+                                <Label Text="Revenu net après impôt" 
+                                       FontSize="14"
+                                       VerticalOptions="Center"
+                                       TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                            </HorizontalStackLayout>
+                            
+                            <HorizontalStackLayout Grid.Column="1" Spacing="8" HorizontalOptions="Start">
+                                <BoxView WidthRequest="20" HeightRequest="20" Color="OrangeRed" />
+                                <Label Text="Impôt sur le revenu" 
+                                       FontSize="14"
+                                       VerticalOptions="Center"
+                                       TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                            </HorizontalStackLayout>
+                        </Grid>
+
+                        <!-- Montants détaillés -->
+                        <Grid Grid.Row="2" ColumnDefinitions="*, *" ColumnSpacing="10" Margin="0,5,0,0">
+                            <VerticalStackLayout Grid.Column="0" Spacing="3">
+                                <Label Text="{Binding SalaireApresImpot, StringFormat='{0:N0} €'}"
+                                       FontSize="18"
+                                       FontAttributes="Bold"
+                                       TextColor="ForestGreen" />
+                                <Label Text="Reste pour vous" 
+                                       FontSize="12"
+                                       TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}" />
+                            </VerticalStackLayout>
+                            
+                            <VerticalStackLayout Grid.Column="1" Spacing="3">
+                                <Label Text="{Binding ImpotAPayer, StringFormat='{0:N0} €'}"
+                                       FontSize="18"
+                                       FontAttributes="Bold"
+                                       TextColor="OrangeRed" />
+                                <Label Text="Part de l'État" 
+                                       FontSize="12"
+                                       TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}" />
+                            </VerticalStackLayout>
+                        </Grid>
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- ======================= BOUTON COMPARAISON ======================= -->
+            <Button Text="🔍 Comparer des scénarios"
+                    BackgroundColor="{StaticResource PrimaryColor}"
+                    TextColor="White"
+                    FontSize="16"
+                    FontAttributes="Bold"
+                    Padding="15"
+                    CornerRadius="12"
+                    Clicked="OnComparerScenariosClicked">
+                <Button.Shadow>
+                    <Shadow Brush="#000000" Offset="4,4" Radius="15" Opacity="0.1" />
+                </Button.Shadow>
+            </Button>
+
+            <!-- ======================= SECTION PÉDAGOGIQUE ======================= -->
+            <Border Style="{StaticResource CardBorderStyle}">
+                <VerticalStackLayout Spacing="10">
+                    <!-- En-tête cliquable -->
+                    <Grid ColumnDefinitions="*, Auto">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnDetailCalculTapped" />
+                        </Grid.GestureRecognizers>
+                        
+                        <HorizontalStackLayout Grid.Column="0" Spacing="5">
+                            <Label Text="💡 Comment est calculé mon impôt ?" 
+                                   Style="{StaticResource SectionTitleStyle}"
+                                   FontSize="18"
+                                   VerticalOptions="Center" />
+                            <controls:InfoIcon TooltipKey="Tranches" VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+                        
+                        <Label Grid.Column="1" 
+                               Text="{Binding IsDetailCalculExpanded, Converter={StaticResource BoolToExpandIconConverter}}"
+                               FontSize="24"
+                               TextColor="{StaticResource PrimaryColor}"
+                               VerticalOptions="Center" />
+                    </Grid>
+
+                    <!-- Contenu expandable -->
+                    <VerticalStackLayout Spacing="15" IsVisible="{Binding IsDetailCalculExpanded}">
+                        <BoxView HeightRequest="1" Color="{AppThemeBinding Light={StaticResource BorderColorLight}, Dark={StaticResource BorderColorDark}}" />
+                        
+                        <!-- Étape 1 : Abattement -->
+                        <VerticalStackLayout Spacing="5">
+                            <Label Text="Étape 1 : Calcul du revenu imposable" 
+                                   FontSize="15" 
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                            <Label FontSize="14" TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="Salaire net fiscal : " />
+                                        <Span Text="{Binding SalaireNetInput, StringFormat='{0} €'}" FontAttributes="Bold" />
+                                        <Span Text="&#x0a;Abattement de 10% : " />
+                                        <Span Text="{Binding AbattementForfaitaire, StringFormat='- {0:N0} €'}" FontAttributes="Bold" />
+                                        <Span Text="&#x0a;= Revenu imposable : " />
+                                        <Span Text="{Binding SalaireNetApresAbattement, StringFormat='{0:N0} €'}" FontAttributes="Bold" TextColor="ForestGreen" />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                        </VerticalStackLayout>
+
+                        <!-- Étape 2 : Quotient familial -->
+                        <VerticalStackLayout Spacing="5">
+                            <Label Text="Étape 2 : Division par le nombre de parts" 
+                                   FontSize="15" 
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                            <Label FontSize="14" TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="{Binding SalaireNetApresAbattement, StringFormat='{0:N0} €'}" />
+                                        <Span Text=" ÷ " />
+                                        <Span Text="{Binding SelectedPartOption.Value, StringFormat='{0}'}" FontAttributes="Bold" />
+                                        <Span Text=" part(s) = " />
+                                        <Span Text="{Binding QuotientFamilial, StringFormat='{0:N0} € (quotient familial)'}" FontAttributes="Bold" TextColor="{StaticResource PrimaryColor}" />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                        </VerticalStackLayout>
+
+                        <!-- Étape 3 : Tranches d'imposition -->
+                        <VerticalStackLayout Spacing="5">
+                            <Label Text="Étape 3 : Application des tranches sur le quotient familial" 
+                                   FontSize="15" 
+                                   FontAttributes="Bold"
+                                   TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                            
+                            <Label FontSize="13" TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="Les tranches s'appliquent sur votre quotient familial de " />
+                                        <Span Text="{Binding QuotientFamilial, StringFormat='{0:N0} €'}" FontAttributes="Bold" />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            
+                            <!-- Tableau des tranches -->
+                            <Grid ColumnDefinitions="2*, *, *" 
+                                  RowDefinitions="Auto, Auto, Auto, Auto, Auto, Auto"
+                                  RowSpacing="8"
+                                  ColumnSpacing="10"
+                                  Padding="10"
+                                  BackgroundColor="{AppThemeBinding Light=#F7F7F7, Dark=#1E1E1E}">
+                                
+                                <!-- En-têtes -->
+                                <Label Grid.Row="0" Grid.Column="0" Text="Tranche de revenu" FontSize="12" FontAttributes="Bold" />
+                                <Label Grid.Row="0" Grid.Column="1" Text="Taux" FontSize="12" FontAttributes="Bold" HorizontalTextAlignment="Center" />
+                                <Label Grid.Row="0" Grid.Column="2" Text="Impôt" FontSize="12" FontAttributes="Bold" HorizontalTextAlignment="End" />
+                                
+                                <!-- Tranche 0 -->
+                                <Label Grid.Row="1" Grid.Column="0" Text="0 € → 11 497 €" FontSize="13" 
+                                       TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}" />
+                                <Label Grid.Row="1" Grid.Column="1" Text="0%" FontSize="13" HorizontalTextAlignment="Center"
+                                       TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}" />
+                                <Label Grid.Row="1" Grid.Column="2" Text="0 €" FontSize="13" HorizontalTextAlignment="End"
+                                       TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}" />
+                                
+                                <!-- Tranche 1 -->
+                                <Label Grid.Row="2" Grid.Column="0" Text="11 497 € → 29 315 €" FontSize="13"
+                                       FontAttributes="{Binding MontantTranche1, Converter={StaticResource GreaterThanZeroBoldConverter}}"
+                                       TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                                <Label Grid.Row="2" Grid.Column="1" Text="11%" FontSize="13" HorizontalTextAlignment="Center"
+                                       FontAttributes="{Binding MontantTranche1, Converter={StaticResource GreaterThanZeroBoldConverter}}"
+                                       TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                                <Label Grid.Row="2" Grid.Column="2" Text="{Binding MontantTranche1, StringFormat='{0:N0} €'}" FontSize="13" HorizontalTextAlignment="End"
+                                       FontAttributes="{Binding MontantTranche1, Converter={StaticResource GreaterThanZeroBoldConverter}}"
+                                       TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                                
+                                <!-- Tranche 2 -->
+                                <Label Grid.Row="3" Grid.Column="0" Text="29 315 € → 83 823 €" FontSize="13"
+                                       FontAttributes="{Binding MontantTranche2, Converter={StaticResource GreaterThanZeroBoldConverter}}"
+                                       TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                                <Label Grid.Row="3" Grid.Column="1" Text="30%" FontSize="13" HorizontalTextAlignment="Center"
+                                       FontAttributes="{Binding MontantTranche2, Converter={StaticResource GreaterThanZeroBoldConverter}}"
+                                       TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                                <Label Grid.Row="3" Grid.Column="2" Text="{Binding MontantTranche2, StringFormat='{0:N0} €'}" FontSize="13" HorizontalTextAlignment="End"
+                                       FontAttributes="{Binding MontantTranche2, Converter={StaticResource GreaterThanZeroBoldConverter}}"
+                                       TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                                
+                                <!-- Tranche 3 -->
+                                <Label Grid.Row="4" Grid.Column="0" Text="83 823 € → 180 294 €" FontSize="13"
+                                       FontAttributes="{Binding MontantTranche3, Converter={StaticResource GreaterThanZeroBoldConverter}}"
+                                       TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                                <Label Grid.Row="4" Grid.Column="1" Text="41%" FontSize="13" HorizontalTextAlignment="Center"
+                                       FontAttributes="{Binding MontantTranche3, Converter={StaticResource GreaterThanZeroBoldConverter}}"
+                                       TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                                <Label Grid.Row="4" Grid.Column="2" Text="{Binding MontantTranche3, StringFormat='{0:N0} €'}" FontSize="13" HorizontalTextAlignment="End"
+                                       FontAttributes="{Binding MontantTranche3, Converter={StaticResource GreaterThanZeroBoldConverter}}"
+                                       TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                                
+                                <!-- Tranche 4 -->
+                                <Label Grid.Row="5" Grid.Column="0" Text="Au-delà de 180 294 €" FontSize="13"
+                                       FontAttributes="{Binding MontantTranche4, Converter={StaticResource GreaterThanZeroBoldConverter}}"
+                                       TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                                <Label Grid.Row="5" Grid.Column="1" Text="45%" FontSize="13" HorizontalTextAlignment="Center"
+                                       FontAttributes="{Binding MontantTranche4, Converter={StaticResource GreaterThanZeroBoldConverter}}"
+                                       TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                                <Label Grid.Row="5" Grid.Column="2" Text="{Binding MontantTranche4, StringFormat='{0:N0} €'}" FontSize="13" HorizontalTextAlignment="End"
+                                       FontAttributes="{Binding MontantTranche4, Converter={StaticResource GreaterThanZeroBoldConverter}}"
+                                       TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                            </Grid>
+
+                            <Border BackgroundColor="{AppThemeBinding Light=#E8F5E9, Dark=#1B5E20}"
+                                    Padding="10"
+                                    StrokeShape="RoundRectangle 6"
+                                    Stroke="Transparent"
+                                    Margin="0,10,0,0">
+                                <VerticalStackLayout Spacing="5">
+                                    <Label FontSize="14" FontAttributes="Bold" TextColor="{AppThemeBinding Light=#2E7D32, Dark=#81C784}">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                             <Span Text="💡 Calcul : Impôt par part × " />
+                                             <Span Text="{Binding NombreDePartsCalcule, StringFormat='{0:0.0}'}" />
+                                             <Span Text=" part(s)" />
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                    
+                                    <Label FontSize="14" TextColor="{AppThemeBinding Light=#2E7D32, Dark=#81C784}">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="= Total impôt théorique : " />
+                                                <Span Text="{Binding ImpotTheorique, StringFormat='{0:N0} €'}" FontAttributes="Bold" />
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                    
+                                    <Label FontSize="13" TextColor="{AppThemeBinding Light=#2E7D32, Dark=#81C784}" Margin="0,5,0,0">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="Votre Taux Marginal d'Imposition (TMI) : " />
+                                                <Span Text="{Binding TauxMarginal, StringFormat='{0:P0}'}" FontAttributes="Bold" />
+                                                <Span Text=" (basé sur votre quotient familial)" />
+                                            </FormattedString>
+                                        </Label.FormattedText>
+                                    </Label>
+                                </VerticalStackLayout>
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Étape 4 : Plafonnement (si applicable) -->
+                        <VerticalStackLayout Spacing="5" IsVisible="{Binding IsPlafonne}">
+                            <Label Text="Étape 4 : Application du plafonnement" 
+                                   FontSize="15" 
+                                   FontAttributes="Bold"
+                                   TextColor="OrangeRed" />
+                            <Label FontSize="14" TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="L'avantage lié aux demi-parts supplémentaires est limité. &#x0a;Correction appliquée : " />
+                                        <Span Text="{Binding CoutPlafonnement, StringFormat='+ {0:N0} €'}" FontAttributes="Bold" TextColor="OrangeRed" />
+                                        <Span Text="&#x0a;= Impôt après plafonnement : " />
+                                        <Span Text="{Binding ImpotBrut, StringFormat='{0:N0} €'}" FontAttributes="Bold" />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                        </VerticalStackLayout>
+
+                        <!-- Étape finale : Décote -->
+                        <VerticalStackLayout Spacing="5" IsVisible="{Binding Decote, Converter={StaticResource GreaterThanZeroConverter}}">
+                            <Label Text="{Binding IsPlafonne, Converter={StaticResource PlafonnementToEtapeConverter}}"
+                                   FontSize="15" 
+                                   FontAttributes="Bold"
+                                   TextColor="ForestGreen" />
+                            <Label FontSize="14" TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="Votre impôt étant modeste, une décote est appliquée. &#x0a;Décote : " />
+                                        <Span Text="{Binding Decote, StringFormat='- {0:N0} €'}" FontAttributes="Bold" TextColor="ForestGreen" />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                        </VerticalStackLayout>
+
+                        <!-- Résultat final -->
+                        <BoxView HeightRequest="2" Color="{StaticResource PrimaryColor}" Margin="0,10,0,5" />
+                        <Label FontSize="16" HorizontalTextAlignment="Center" TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}">
+                            <Label.FormattedText>
+                                <FormattedString>
+                                    <Span Text="Impôt net à payer : " FontAttributes="Bold" />
+                                    <Span Text="{Binding ImpotAPayer, StringFormat='{0:N0} €'}" FontAttributes="Bold" FontSize="18" TextColor="{StaticResource PrimaryColor}" />
+                                </FormattedString>
+                            </Label.FormattedText>
+                        </Label>
+                    </VerticalStackLayout>
                 </VerticalStackLayout>
             </Border>
         </VerticalStackLayout>

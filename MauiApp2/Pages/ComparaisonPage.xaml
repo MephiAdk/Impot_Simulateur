@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:MauiApp2.ViewModels"
+             xmlns:models="clr-namespace:MauiApp2.Models"
+             x:Class="MauiApp2.Pages.ComparaisonPage"
+             x:DataType="viewmodels:ComparaisonViewModel"
+             Title="Comparer des scénarios"
+             BackgroundColor="{AppThemeBinding Light=#F7F7F7, Dark=#121212}">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Color x:Key="CardBackgroundColorLight">#FFFFFF</Color>
+            <Color x:Key="CardBackgroundColorDark">#1E1E1E</Color>
+            <Color x:Key="BorderColorLight">#E1E1E1</Color>
+            <Color x:Key="BorderColorDark">#404040</Color>
+            <Color x:Key="PrimaryColor">#6200EE</Color>
+            <Color x:Key="TextColorLight">#424242</Color>
+            <Color x:Key="TextColorDark">#E0E0E0</Color>
+            <Color x:Key="MutedTextColorLight">#757575</Color>
+            <Color x:Key="MutedTextColorDark">#9E9E9E</Color>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ScrollView>
+        <VerticalStackLayout Spacing="20" Padding="20">
+            
+            <Label Text="Comparez différentes situations fiscales pour trouver la plus avantageuse."
+                   FontSize="14"
+                   TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}" />
+
+            <!-- Scénario actuel -->
+            <Border BackgroundColor="{AppThemeBinding Light={StaticResource CardBackgroundColorLight}, Dark={StaticResource CardBackgroundColorDark}}"
+                    Stroke="{StaticResource PrimaryColor}"
+                    StrokeThickness="2"
+                    Padding="20"
+                    StrokeShape="RoundRectangle 12">
+                <VerticalStackLayout Spacing="10">
+                    <HorizontalStackLayout Spacing="10">
+                        <Label Text="✅" FontSize="20" />
+                        <Label Text="Situation actuelle" 
+                               FontSize="18" 
+                               FontAttributes="Bold"
+                               TextColor="{StaticResource PrimaryColor}"
+                               VerticalOptions="Center" />
+                    </HorizontalStackLayout>
+
+                    <Label Text="{Binding ScenarioActuel.DescriptionSituation}"
+                           FontSize="14"
+                           TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+
+                    <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto, Auto, Auto" RowSpacing="8" Margin="0,10,0,0">
+                        <Label Grid.Row="0" Grid.Column="0" Text="Salaire annuel" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}" />
+                        <Label Grid.Row="0" Grid.Column="1" Text="{Binding ScenarioActuel.SalaireNet, StringFormat='{0:N0} €'}" FontSize="13" FontAttributes="Bold" HorizontalOptions="End" TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                        
+                        <Label Grid.Row="1" Grid.Column="0" Text="Impôt à payer" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}" />
+                        <Label Grid.Row="1" Grid.Column="1" Text="{Binding ScenarioActuel.ImpotAPayer, StringFormat='{0:N0} €'}" FontSize="13" FontAttributes="Bold" HorizontalOptions="End" TextColor="OrangeRed" />
+                        
+                        <Label Grid.Row="2" Grid.Column="0" Text="Taux effectif" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}" />
+                        <Label Grid.Row="2" Grid.Column="1" Text="{Binding ScenarioActuel.TauxEffectif, StringFormat='{0:P2}'}" FontSize="13" FontAttributes="Bold" HorizontalOptions="End" TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                        
+                        <Label Grid.Row="3" Grid.Column="0" Text="Prélèvement mensuel" FontSize="13" TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}" />
+                        <Label Grid.Row="3" Grid.Column="1" Text="{Binding ScenarioActuel.PrelevementMensuel, StringFormat='{0:N0} €/mois'}" FontSize="13" FontAttributes="Bold" HorizontalOptions="End" TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                    </Grid>
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Scénarios de comparaison -->
+            <Label Text="Scénarios de comparaison" 
+                   FontSize="18"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource PrimaryColor}"
+                   Margin="0,10,0,0" />
+
+            <CollectionView ItemsSource="{Binding ScenariosComparaison}"
+                            SelectionMode="None">
+                <CollectionView.ItemTemplate>
+                    <DataTemplate x:DataType="models:Scenario">
+                        <Border BackgroundColor="{AppThemeBinding Light={StaticResource CardBackgroundColorLight}, Dark={StaticResource CardBackgroundColorDark}}"
+                                Stroke="{AppThemeBinding Light={StaticResource BorderColorLight}, Dark={StaticResource BorderColorDark}}"
+                                StrokeThickness="1"
+                                Padding="20"
+                                StrokeShape="RoundRectangle 12"
+                                Margin="0,0,0,15">
+                            <VerticalStackLayout Spacing="10">
+                                <Label Text="{Binding Nom}" 
+                                       FontSize="16" 
+                                       FontAttributes="Bold"
+                                       TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+
+                                <Label Text="{Binding DescriptionSituation}"
+                                       FontSize="13"
+                                       TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}" />
+
+                                <Grid ColumnDefinitions="*, Auto" RowDefinitions="Auto, Auto, Auto" RowSpacing="6" Margin="0,5,0,0">
+                                    <Label Grid.Row="0" Grid.Column="0" Text="Impôt à payer" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}" />
+                                    <Label Grid.Row="0" Grid.Column="1" Text="{Binding ImpotAPayer, StringFormat='{0:N0} €'}" FontSize="12" FontAttributes="Bold" HorizontalOptions="End" TextColor="OrangeRed" />
+                                    
+                                    <Label Grid.Row="1" Grid.Column="0" Text="Taux effectif" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}" />
+                                    <Label Grid.Row="1" Grid.Column="1" Text="{Binding TauxEffectif, StringFormat='{0:P2}'}" FontSize="12" FontAttributes="Bold" HorizontalOptions="End" TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                                    
+                                    <Label Grid.Row="2" Grid.Column="0" Text="Prélèvement mensuel" FontSize="12" TextColor="{AppThemeBinding Light={StaticResource MutedTextColorLight}, Dark={StaticResource MutedTextColorDark}}" />
+                                    <Label Grid.Row="2" Grid.Column="1" Text="{Binding PrelevementMensuel, StringFormat='{0:N0} €'}" FontSize="12" FontAttributes="Bold" HorizontalOptions="End" TextColor="{AppThemeBinding Light={StaticResource TextColorLight}, Dark={StaticResource TextColorDark}}" />
+                                </Grid>
+                            </VerticalStackLayout>
+                        </Border>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <!-- Bouton pour fermer -->
+            <Button Text="Fermer" 
+                    BackgroundColor="{StaticResource PrimaryColor}"
+                    TextColor="White"
+                    Clicked="OnFermerClicked"
+                    Margin="0,20,0,0" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
+
