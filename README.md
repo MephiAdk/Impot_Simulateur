@@ -258,63 +258,6 @@ L'application a été testée avec différents scénarios :
 - ✅ Revenus élevés (avec plafonnement QF)
 - ✅ Revenus très élevés (TMI 45%)
 
-### Validation
-
-Les résultats ont été vérifiés avec le simulateur officiel des impôts :
-🔗 [impots.gouv.fr](https://www.impots.gouv.fr/simulateurs)
-
----
-
-## 📱 Captures d'écran
-
-> 📸 _Captures d'écran à venir_
-
----
-
-## 🗺️ Roadmap
-
-### Version 1.1 (À venir)
-
-- [ ] Graphique en secteurs de la répartition par tranche
-- [ ] Export PDF des résultats
-- [ ] Historique des simulations
-- [ ] Support des revenus fonciers
-- [ ] Calculateur de réductions d'impôt
-
-### Version 1.2 (Future)
-
-- [ ] Mode multi-déclarants pour couples
-- [ ] Simulation pluriannuelle
-- [ ] Comparaison avec années précédentes
-- [ ] Support des crédits d'impôt (emploi à domicile, garde d'enfants)
-- [ ] Calculateur PER et FCPI
-
----
-
-## 🤝 Contribuer
-
-Les contributions sont les bienvenues ! Voici comment participer :
-
-1. **Fork** le projet
-2. Créez une **branche** pour votre fonctionnalité (`git checkout -b feature/AmazingFeature`)
-3. **Committez** vos changements (`git commit -m 'Add: Amazing Feature'`)
-4. **Pushez** vers la branche (`git push origin feature/AmazingFeature`)
-5. Ouvrez une **Pull Request**
-
-### Guidelines
-
-- Respecter l'architecture MVVM existante
-- Ajouter des commentaires pour le code complexe
-- Tester sur au moins 2 plateformes
-- Mettre à jour la documentation si nécessaire
-
----
-
-## 📄 Licence
-
-Ce projet est sous licence **MIT** - voir le fichier [LICENSE](LICENSE) pour plus de détails.
-
----
 
 ## 📚 Ressources
 
@@ -330,24 +273,6 @@ Ce projet est sous licence **MIT** - voir le fichier [LICENSE](LICENSE) pour plu
 - [Simulateur officiel des impôts](https://www.impots.gouv.fr/simulateurs)
 - [JSON Validator](https://jsonlint.com/) - Pour vérifier votre barème fiscal
 
----
-
-## 👨‍💻 Auteur
-
-**Votre Nom**
-
-- GitHub: [@votre-username](https://github.com/votre-username)
-- Email: votre.email@example.com
-
----
-
-## 🙏 Remerciements
-
-- Merci à la communauté .NET MAUI pour leur support
-- Merci aux contributeurs du projet CommunityToolkit.Mvvm
-- Sources officielles : impots.gouv.fr et service-public.fr
-
----
 
 <div align="center">
 
